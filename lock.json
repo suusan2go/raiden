@@ -1,5 +1,5 @@
 {
-    "memo": "61a7d2cb3276c2dec0945450564a2db82506e1cc062d75e5fbecac3ba661cf5a",
+    "memo": "b0afdf3ba2096637529afce8d0da6117c1ab9e38e1ac8c955c7dd589a7b4bca7",
     "projects": [
         {
             "name": "github.com/fsnotify/fsnotify",
@@ -7,6 +7,30 @@
             "revision": "4da3e2cfbabc9f751898f250b49f2439785783a1",
             "packages": [
                 "."
+            ]
+        },
+        {
+            "name": "github.com/golang/protobuf",
+            "branch": "master",
+            "revision": "fec3b39b059c0f88fa6b20f5ed012b1aa203a8b4",
+            "packages": [
+                "proto"
+            ]
+        },
+        {
+            "name": "github.com/google/go-github",
+            "branch": "master",
+            "revision": "4a42a1def4af554769703e8ac0ce5290c16371a2",
+            "packages": [
+                "github"
+            ]
+        },
+        {
+            "name": "github.com/google/go-querystring",
+            "branch": "master",
+            "revision": "53e6ce116135b80d037921a7fdd5138cf32d7a8a",
+            "packages": [
+                "query"
             ]
         },
         {
@@ -123,6 +147,14 @@
             ]
         },
         {
+            "name": "golang.org/x/net",
+            "branch": "master",
+            "revision": "84f0e6f92b10139f986b1756e149a7d9de270cdc",
+            "packages": [
+                "context"
+            ]
+        },
+        {
             "name": "golang.org/x/sys",
             "branch": "master",
             "revision": "9ccfe848b9db8435a24c424abbc07a921adf1df5",
@@ -141,6 +173,21 @@
                 "transform",
                 "unicode/cldr",
                 "unicode/norm"
+            ]
+        },
+        {
+            "name": "google.golang.org/appengine",
+            "version": "v1.0.0",
+            "revision": "150dc57a1b433e64154302bdc40b6bb8aefa313a",
+            "packages": [
+                ".",
+                "internal",
+                "internal/app_identity",
+                "internal/base",
+                "internal/datastore",
+                "internal/log",
+                "internal/modules",
+                "internal/remote_api"
             ]
         },
         {

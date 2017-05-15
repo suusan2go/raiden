@@ -14,14 +14,17 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"log"
 
+	"github.com/google/go-github/github"
 	"github.com/spf13/cobra"
 )
 
 type releasesClean struct {
 	repository string
+	owner      string
 	dry        bool
 }
 
@@ -55,7 +58,8 @@ raiden clean -r "suzan2go/many_releases_tag_repo"`,
 	}
 
 	flags := cmd.Flags()
-	flags.StringVarP(&c.repository, "repository", "r", "", "Set repository name like suzan2go/hoge")
+	flags.StringVarP(&c.repository, "repository", "r", "", "Set repository name like hoge")
+	flags.StringVarP(&c.owner, "owner", "o", "", "Set owner name of repository like suzan2go")
 	flags.BoolVarP(&c.dry, "dry", "d", false, "Just get reases tag and not delete")
 
 	return cmd
@@ -69,12 +73,19 @@ func init() {
 }
 
 func (c *releasesClean) clean(cmd *cobra.Command, args []string) {
+	client := github.NewClient(nil)
+	ctx := context.Background()
 	if len(c.repository) == 0 {
 		log.Fatal("repository not specified")
 	}
+	if len(c.repository) == 0 {
+		log.Fatal("owner not specified")
+	}
+	fmt.Println("[dry run] clean releases tags for " + c.owner + "/" + c.repository)
+	rels, _, _ := client.Repositories.ListReleases(ctx, c.owner, c.repository, nil)
 	if c.dry {
-		fmt.Println("[dry run] clean releases tags for " + c.repository)
+		log.Fatal(rels)
 		return
 	}
-	fmt.Println("clean releases tags for " + c.repository)
+	fmt.Println("clean releases tags for " + c.owner + "/" + c.repository)
 }
