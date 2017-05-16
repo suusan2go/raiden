@@ -59,7 +59,7 @@ func reasesCleanCmd() *cobra.Command {
 		Use:   "clean",
 		Short: "clean reases tag",
 		Long: `clean up reasess tags:
-raiden clean -r "suzan2go/many_releases_tag_repo"`,
+raiden releases clean -r many_releases_tag_repo -o user_or_org_name --months 1`,
 		Run: c.clean,
 	}
 
