@@ -17,15 +17,21 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
+	"time"
 
 	"github.com/google/go-github/github"
 	"github.com/spf13/cobra"
+	"golang.org/x/oauth2"
 )
 
 type releasesClean struct {
 	repository string
 	owner      string
 	dry        bool
+	year       int
+	months     int
+	days       int
 }
 
 // releasesCmd represents the releases command
@@ -61,6 +67,9 @@ raiden clean -r "suzan2go/many_releases_tag_repo"`,
 	flags.StringVarP(&c.repository, "repository", "r", "", "Set repository name like hoge")
 	flags.StringVarP(&c.owner, "owner", "o", "", "Set owner name of repository like suzan2go")
 	flags.BoolVarP(&c.dry, "dry", "d", false, "Just get reases tag and not delete")
+	flags.IntVar(&c.year, "year", 0, "clean releases year before")
+	flags.IntVar(&c.months, "months", -1, "clean releases Month before")
+	flags.IntVar(&c.days, "days", 0, "clean releases year before")
 
 	return cmd
 }
@@ -73,19 +82,39 @@ func init() {
 }
 
 func (c *releasesClean) clean(cmd *cobra.Command, args []string) {
-	client := github.NewClient(nil)
-	ctx := context.Background()
+	// check arguments
 	if len(c.repository) == 0 {
 		log.Fatal("repository not specified")
 	}
-	if len(c.repository) == 0 {
+	if len(c.owner) == 0 {
 		log.Fatal("owner not specified")
 	}
-	fmt.Println("[dry run] clean releases tags for " + c.owner + "/" + c.repository)
-	rels, _, _ := client.Repositories.ListReleases(ctx, c.owner, c.repository, nil)
-	if c.dry {
-		log.Fatal(rels)
-		return
+	// Setup Github Client
+	ctx := context.Background()
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: os.Getenv("GITHUB_ACCESS_TOKEN")},
+	)
+	tc := oauth2.NewClient(ctx, ts)
+	client := github.NewClient(tc)
+	log.Printf("start clean releases tags for %s/%s", c.owner, c.repository)
+	log.Println("ID TagName TargetCommitish CreatedAt")
+	// fetch releases
+	for page := 1; ; {
+		rls, res, _ := client.Repositories.ListReleases(ctx, c.owner, c.repository, &github.ListOptions{Page: page})
+		for _, r := range rls {
+			if r.CreatedAt.Time.Unix() < time.Now().AddDate(-c.year, -c.months, -c.days).Unix() {
+				log.Printf("%d %s %s %s", *r.ID, *r.TagName, *r.TargetCommitish, *r.CreatedAt)
+				if c.dry {
+					continue
+				}
+				// TODO: delete Release tag
+			}
+		}
+		// if current page is last page, LastPage value is 0
+		if res.LastPage == 0 {
+			break
+		}
+		page = res.NextPage
 	}
-	fmt.Println("clean releases tags for " + c.owner + "/" + c.repository)
+	log.Println("clean releases tags for " + c.owner + "/" + c.repository)
 }

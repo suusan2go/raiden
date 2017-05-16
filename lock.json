@@ -1,5 +1,5 @@
 {
-    "memo": "b0afdf3ba2096637529afce8d0da6117c1ab9e38e1ac8c955c7dd589a7b4bca7",
+    "memo": "f641e3b483d9e86c92715f90040e07390bde4ebc20d160e5a09fd429875fce94",
     "projects": [
         {
             "name": "github.com/fsnotify/fsnotify",
@@ -155,6 +155,15 @@
             ]
         },
         {
+            "name": "golang.org/x/oauth2",
+            "branch": "master",
+            "revision": "ad516a297a9f2a74ecc244861b298c94bdd28b9d",
+            "packages": [
+                ".",
+                "internal"
+            ]
+        },
+        {
             "name": "golang.org/x/sys",
             "branch": "master",
             "revision": "9ccfe848b9db8435a24c424abbc07a921adf1df5",
@@ -187,7 +196,9 @@
                 "internal/datastore",
                 "internal/log",
                 "internal/modules",
-                "internal/remote_api"
+                "internal/remote_api",
+                "internal/urlfetch",
+                "urlfetch"
             ]
         },
         {
