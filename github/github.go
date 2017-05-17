@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/google/go-github/github"
@@ -41,9 +42,9 @@ func Initialize(owner, repo string) *GitHub {
 }
 
 // DeleteReleases delete release tag
-func (g *GitHub) DeleteReleases(dry bool, year, months, days int) error {
+func (g *GitHub) DeleteReleases(dry bool, year, months, days int, prefix string) error {
 	ctx := context.Background()
-	rls := g.ListReleases(year, months, days)
+	rls := g.ListReleases(year, months, days, prefix)
 	if dry {
 		return nil
 	}
@@ -61,15 +62,15 @@ func (g *GitHub) DeleteReleases(dry bool, year, months, days int) error {
 }
 
 // ListReleases get releases
-func (g *GitHub) ListReleases(year, months, days int) []*github.RepositoryRelease {
+func (g *GitHub) ListReleases(year, months, days int, prefix string) []*github.RepositoryRelease {
 	log.Println("ID TagName TargetCommitish CreatedAt")
 	var rls []*github.RepositoryRelease
 	for page := 1; ; {
 		ctx := context.Background()
 		rs, res, _ := g.Client.Repositories.ListReleases(ctx, g.owner, g.repo, &github.ListOptions{Page: page})
 		for _, r := range rs {
-			if r.CreatedAt.Time.Unix() < time.Now().AddDate(-1*year, -1*months, -1*days).Unix() {
-				log.Printf("%d %s %s %s", *r.ID, *r.TagName, *r.TargetCommitish, *r.CreatedAt)
+			if isTargetRelease(r, time.Now().AddDate(-1*year, -1*months, -1*days), prefix) {
+				log.Printf("%d %s %s %s", *r.ID, r.GetName(), *r.TargetCommitish, *r.CreatedAt)
 				rls = append(rls, r)
 			}
 		}
@@ -80,4 +81,9 @@ func (g *GitHub) ListReleases(year, months, days int) []*github.RepositoryReleas
 		page = res.NextPage
 	}
 	return rls
+}
+
+func isTargetRelease(r *github.RepositoryRelease, t time.Time, prefix string) bool {
+	return r.CreatedAt.Time.Unix() < t.Unix() &&
+		strings.HasPrefix(r.GetName(), prefix)
 }

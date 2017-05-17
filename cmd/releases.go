@@ -24,6 +24,7 @@ import (
 type releasesClean struct {
 	repository string
 	owner      string
+	prefix     string
 	dry        bool
 	year       int
 	months     int
@@ -60,6 +61,7 @@ raiden releases clean -r many_releases_tag_repo -o user_or_org_name --months 1`,
 	}
 
 	flags := cmd.Flags()
+	flags.StringVarP(&c.prefix, "prefix", "p", "", "set Prefix of release tag name")
 	flags.StringVarP(&c.repository, "repository", "r", "", "Set repository name like hoge")
 	flags.StringVarP(&c.owner, "owner", "o", "", "Set owner name of repository like suzan2go")
 	flags.BoolVarP(&c.dry, "dry", "d", false, "Just get reases tag and not delete")
@@ -80,6 +82,6 @@ func init() {
 func (c *releasesClean) clean(cmd *cobra.Command, args []string) {
 	log.Printf("start clean releases tags for %s/%s", c.owner, c.repository)
 	g := github.Initialize(c.owner, c.repository)
-	g.DeleteReleases(c.dry, c.year, c.months, c.days)
+	g.DeleteReleases(c.dry, c.year, c.months, c.days, c.prefix)
 	log.Println("clean releases tags for " + c.owner + "/" + c.repository)
 }
