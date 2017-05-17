@@ -51,11 +51,12 @@ func (g *GitHub) DeleteReleases(dry bool, year, months, days int, prefix string)
 	for _, r := range rls {
 		// Delete GitHub Release
 		if _, e := g.Client.Repositories.DeleteRelease(ctx, g.owner, g.repo, *r.ID); e != nil {
-			log.Fatalf("Deleting tag %s failed; error: %s", *r.TagName, e)
+			log.Fatalf("Deleting release %s failed; error: %s", r.GetName(), e)
 		}
 		// Delete Git tag
 		if _, e := g.Client.Git.DeleteRef(ctx, g.owner, g.repo, "tags/"+*r.TagName); e != nil {
-			log.Fatalf("Deleting tag %s failed; error: %s", *r.TagName, e)
+			// Draft release dose not have git tag sometimes.
+			log.Printf("Deleting tag %s failed; error: %s", *r.TagName, e)
 		}
 	}
 	return nil
