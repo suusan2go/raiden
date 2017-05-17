@@ -107,7 +107,14 @@ func (c *releasesClean) clean(cmd *cobra.Command, args []string) {
 				if c.dry {
 					continue
 				}
-				// TODO: delete Release tag
+				// Delete GitHub Release
+				if _, e := client.Repositories.DeleteRelease(ctx, c.owner, c.repository, *r.ID); e != nil {
+					log.Fatalf("Deleting tag %s failed; error: %s", *r.TagName, e)
+				}
+				// Delete Git tag
+				if _, e := client.Git.DeleteRef(ctx, c.owner, c.repository, "tags/"+*r.TagName); e != nil {
+					log.Printf("Deleting tag %s failed; %s", *r.TagName, e)
+				}
 			}
 		}
 		// if current page is last page, LastPage value is 0
