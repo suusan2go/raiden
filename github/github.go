@@ -74,7 +74,7 @@ func (g *GitHub) ListReleases(year, months, days int, prefix string) []*github.R
 		}
 		for _, r := range rs {
 			if isTargetRelease(r, time.Now().AddDate(-1*year, -1*months, -1*days), prefix) {
-				log.Printf("%d %s %s %s", *r.ID, r.GetName(), *r.TargetCommitish, *r.CreatedAt)
+				log.Printf("%d %s %s %s", *r.ID, releaseName(r), *r.TargetCommitish, *r.CreatedAt)
 				rls = append(rls, r)
 			}
 		}
@@ -87,7 +87,17 @@ func (g *GitHub) ListReleases(year, months, days int, prefix string) []*github.R
 	return rls
 }
 
+func releaseName(r *github.RepositoryRelease) string {
+	var name string
+	if len(r.GetName()) == 0 {
+		name = *r.TagName
+	} else {
+		name = r.GetName()
+	}
+	return name
+}
+
 func isTargetRelease(r *github.RepositoryRelease, t time.Time, prefix string) bool {
 	return r.CreatedAt.Time.Unix() < t.Unix() &&
-		strings.HasPrefix(r.GetName(), prefix)
+		strings.HasPrefix(releaseName(r), prefix)
 }
