@@ -14,15 +14,11 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"log"
-	"os"
-	"time"
 
-	"github.com/google/go-github/github"
 	"github.com/spf13/cobra"
-	"golang.org/x/oauth2"
+	"github.com/suzan2go/raiden/github"
 )
 
 type releasesClean struct {
@@ -82,46 +78,8 @@ func init() {
 }
 
 func (c *releasesClean) clean(cmd *cobra.Command, args []string) {
-	// check arguments
-	if len(c.repository) == 0 {
-		log.Fatal("repository not specified")
-	}
-	if len(c.owner) == 0 {
-		log.Fatal("owner not specified")
-	}
-	// Setup Github Client
-	ctx := context.Background()
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: os.Getenv("GITHUB_ACCESS_TOKEN")},
-	)
-	tc := oauth2.NewClient(ctx, ts)
-	client := github.NewClient(tc)
 	log.Printf("start clean releases tags for %s/%s", c.owner, c.repository)
-	log.Println("ID TagName TargetCommitish CreatedAt")
-	// fetch releases
-	for page := 1; ; {
-		rls, res, _ := client.Repositories.ListReleases(ctx, c.owner, c.repository, &github.ListOptions{Page: page})
-		for _, r := range rls {
-			if r.CreatedAt.Time.Unix() < time.Now().AddDate(-c.year, -c.months, -c.days).Unix() {
-				log.Printf("%d %s %s %s", *r.ID, *r.TagName, *r.TargetCommitish, *r.CreatedAt)
-				if c.dry {
-					continue
-				}
-				// Delete GitHub Release
-				if _, e := client.Repositories.DeleteRelease(ctx, c.owner, c.repository, *r.ID); e != nil {
-					log.Fatalf("Deleting tag %s failed; error: %s", *r.TagName, e)
-				}
-				// Delete Git tag
-				if _, e := client.Git.DeleteRef(ctx, c.owner, c.repository, "tags/"+*r.TagName); e != nil {
-					log.Printf("Deleting tag %s failed; %s", *r.TagName, e)
-				}
-			}
-		}
-		// if current page is last page, LastPage value is 0
-		if res.LastPage == 0 {
-			break
-		}
-		page = res.NextPage
-	}
+	g := github.Initialize(c.owner, c.repository)
+	g.DeleteReleases(c.dry, c.year, c.months, c.days)
 	log.Println("clean releases tags for " + c.owner + "/" + c.repository)
 }
