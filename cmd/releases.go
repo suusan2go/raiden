@@ -66,7 +66,7 @@ raiden releases clean -r many_releases_tag_repo -o user_or_org_name --months 1`,
 	flags.StringVarP(&c.owner, "owner", "o", "", "Set owner name of repository like suzan2go")
 	flags.BoolVarP(&c.dry, "dry", "d", false, "Just get reases tag and not delete")
 	flags.IntVar(&c.year, "year", 0, "clean releases year before")
-	flags.IntVar(&c.months, "months", -1, "clean releases Month before")
+	flags.IntVar(&c.months, "months", 0, "clean releases Month before")
 	flags.IntVar(&c.days, "days", 0, "clean releases year before")
 
 	return cmd
