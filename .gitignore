@@ -25,3 +25,6 @@ _testmain.go
 
 # dep
 vendor
+
+# direnv
+.envrc
