@@ -68,7 +68,10 @@ func (g *GitHub) ListReleases(year, months, days int, prefix string) []*github.R
 	var rls []*github.RepositoryRelease
 	for page := 1; ; {
 		ctx := context.Background()
-		rs, res, _ := g.Client.Repositories.ListReleases(ctx, g.owner, g.repo, &github.ListOptions{Page: page})
+		rs, res, err := g.Client.Repositories.ListReleases(ctx, g.owner, g.repo, &github.ListOptions{Page: page})
+		if err != nil {
+			log.Fatal(err)
+		}
 		for _, r := range rs {
 			if isTargetRelease(r, time.Now().AddDate(-1*year, -1*months, -1*days), prefix) {
 				log.Printf("%d %s %s %s", *r.ID, r.GetName(), *r.TargetCommitish, *r.CreatedAt)
