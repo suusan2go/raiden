@@ -87,6 +87,54 @@ func (g *GitHub) ListReleases(year, months, days int, prefix string) []*github.R
 	return rls
 }
 
+// DeleteTags delete release tag
+func (g *GitHub) DeleteTags(dry bool, year, months, days int, prefix string) error {
+	// ctx := context.Background()
+	tags := g.ListTags(year, months, days, prefix)
+	if dry {
+		return nil
+	}
+	for _, t := range tags {
+		// Delete Git tag
+		ctx := context.Background()
+		if _, e := g.Client.Git.DeleteRef(ctx, g.owner, g.repo, "tags/"+t.GetName()); e != nil {
+			log.Fatalf("Deleting tag %s failed; error: %s", t.GetName(), e)
+		}
+	}
+	return nil
+}
+
+// ListTags get tags from github api
+func (g *GitHub) ListTags(year, months, days int, prefix string) []*github.RepositoryTag {
+	log.Println("ID TagName TargetCommitish CreatedAt")
+	var tags []*github.RepositoryTag
+	for page := 1; ; {
+		ctx := context.Background()
+		rts, res, err := g.Client.Repositories.ListTags(ctx, g.owner, g.repo, &github.ListOptions{Page: page, PerPage: 100})
+		if err != nil {
+			log.Fatal(err)
+		}
+		for _, rt := range rts {
+			ctx := context.Background()
+			c, _, err := g.Client.Git.GetCommit(ctx, g.owner, g.repo, rt.Commit.GetSHA())
+			rt.Commit = c
+			if err != nil {
+				log.Fatal(err)
+			}
+			if isTargetTag(rt, time.Now().AddDate(-1*year, -1*months, -1*days), prefix) {
+				log.Printf("%s %s", rt.GetName(), rt.Commit.Author.GetDate())
+				tags = append(tags, rt)
+			}
+		}
+		// if current page is last page, LastPage value is 0
+		if res.LastPage == 0 {
+			break
+		}
+		page = res.NextPage
+	}
+	return tags
+}
+
 func releaseName(r *github.RepositoryRelease) string {
 	var name string
 	if len(r.GetName()) == 0 {
@@ -100,4 +148,12 @@ func releaseName(r *github.RepositoryRelease) string {
 func isTargetRelease(r *github.RepositoryRelease, t time.Time, prefix string) bool {
 	return r.CreatedAt.Time.Unix() < t.Unix() &&
 		strings.HasPrefix(releaseName(r), prefix)
+}
+
+func isTargetTag(tg *github.RepositoryTag, t time.Time, prefix string) bool {
+	if tg.Commit.Author != nil {
+		return tg.Commit.Author.Date.Unix() < t.Unix() &&
+			strings.HasPrefix(tg.GetName(), prefix)
+	}
+	return strings.HasPrefix(tg.GetName(), prefix)
 }
