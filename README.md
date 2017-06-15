@@ -1,8 +1,8 @@
 # Raiden - Simple GitHub Repository Cleaner
-**Documentation:** [![GoDoc](https://godoc.org/github.com/suzan2go/raiden?status.svg)](https://godoc.org/github.com/suzan2go/raiden)  
+**Documentation:** [![GoDoc](https://godoc.org/github.com/suzan2go/raiden?status.svg)](https://godoc.org/github.com/suzan2go/raiden)
 
 Raiden is a simple GitHub Repository Cleaner
-- [x] clean old releases
+- [x] clean old releases by name or created time
 - [ ] clean old branches
 - [ ] clean old pull-requests
 
