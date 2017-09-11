@@ -1,4 +1,4 @@
-// Copyright © 2017 suzan2go <ksuzuki180@gmail.com>
+// Copyright © 2017 suusan2go <ksuzuki180@gmail.com>
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -18,7 +18,7 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
-	"github.com/suzan2go/raiden/github"
+	"github.com/suusan2go/raiden/github"
 )
 
 type releasesClean struct {
@@ -57,7 +57,7 @@ raiden releases clean -r many_releases_tag_repo -o user_or_org_name --months 1`,
 	flags := cmd.Flags()
 	flags.StringVarP(&c.prefix, "prefix", "p", "", "set Prefix of release tag name")
 	flags.StringVarP(&c.repository, "repository", "r", "", "Set repository name like hoge")
-	flags.StringVarP(&c.owner, "owner", "o", "", "Set owner name of repository like suzan2go")
+	flags.StringVarP(&c.owner, "owner", "o", "", "Set owner name of repository like suusan2go")
 	flags.BoolVarP(&c.dry, "dry", "d", false, "Just get reases tag and not delete")
 	flags.IntVar(&c.year, "year", 0, "clean releases year before")
 	flags.IntVar(&c.months, "months", 0, "clean releases Month before")

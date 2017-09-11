@@ -1,5 +1,5 @@
 # Raiden - Simple GitHub Repository Cleaner
-**Documentation:** [![GoDoc](https://godoc.org/github.com/suzan2go/raiden?status.svg)](https://godoc.org/github.com/suzan2go/raiden)
+**Documentation:** [![GoDoc](https://godoc.org/github.com/suusan2go/raiden?status.svg)](https://godoc.org/github.com/suusan2go/raiden)
 
 Raiden is a simple GitHub Repository Cleaner
 - [x] clean old releases by name or created time
@@ -8,12 +8,12 @@ Raiden is a simple GitHub Repository Cleaner
 
 # Installation
 ```bash
-$ go get github.com/suzan2go/raiden
+$ go get github.com/suusan2go/raiden
 ```
 
 # Usage
 ## Clean Release
 ```bash
-# clean suzan2go/hoge repo releases created 1 months ago
-$ raiden releases clean -r raiden -o suzan2go --months 1
+# clean suusan2go/hoge repo releases created 1 months ago
+$ raiden releases clean -r raiden -o suusan2go --months 1
 ```
