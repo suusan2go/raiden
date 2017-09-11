@@ -13,7 +13,7 @@
 
 package main
 
-import "github.com/suzan2go/raiden/cmd"
+import "github.com/suusan2go/raiden/cmd"
 
 func main() {
 	cmd.Execute()
